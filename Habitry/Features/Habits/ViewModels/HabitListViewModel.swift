@@ -18,6 +18,10 @@ final class HabitListViewModel: ObservableObject {
     repository.addDefaultHabit()
   }
 
+  func makeCreateViewModel() -> HabitCreateViewModel {
+    HabitCreateViewModel(repository: repository)
+  }
+
   func deleteItems(offsets: IndexSet) {
     let habits = offsets.map { items[$0] }
     repository.deleteHabits(habits: habits)

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct HabitListView: View {
-    let viewModel: HabitListViewModel
+    @ObservedObject var viewModel: HabitListViewModel
+    @State private var isCreatePresented = false
 
     var body: some View {
         NavigationStack {
@@ -26,18 +27,19 @@ struct HabitListView: View {
             }
             .toolbar {
                 ToolbarItem {
-                    Button(action: addItem) {
+                    Button(action: openCreate) {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
             }
+            .sheet(isPresented: $isCreatePresented) {
+                HabitCreateView(viewModel: viewModel.makeCreateViewModel())
+            }
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            viewModel.addHabit()
-        }
+    private func openCreate() {
+        isCreatePresented = true
     }
 
     private func deleteItems(offsets: IndexSet) {

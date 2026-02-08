@@ -41,10 +41,14 @@ final class CoreDataHabitRepository: NSObject, HabitRepository {
     }
 
     func addDefaultHabit() {
+        addHabit(name: "New Habit")
+    }
+
+    func addHabit(name: String) {
         let newItem = HabitEntity(context: viewContext)
 
         newItem.id = UUID()
-        newItem.name = "New Habit"
+        newItem.name = name
         newItem.unit = "unit"
         newItem.targetValue = 10
         newItem.createdAt = Date()
@@ -54,20 +58,20 @@ final class CoreDataHabitRepository: NSObject, HabitRepository {
         newItem.currentStreak = 0
 
         // create 30 habit entries for the last 30 days
-        let calendar = Calendar.current
-        let today = Date()
-        for dayOffset in 0..<30 {
-            let entryDate = calendar.date(
-                byAdding: .day,
-                value: -dayOffset,
-                to: today
-            )!
-            let entry = HabitEntryEntity(context: viewContext)
-            entry.id = UUID()
-            entry.date = entryDate
-            entry.createdAt = entryDate
-            entry.habit = newItem
-        }
+        // let calendar = Calendar.current
+        // let today = Date()
+        // for dayOffset in 0..<30 {
+        //     let entryDate = calendar.date(
+        //         byAdding: .day,
+        //         value: -dayOffset,
+        //         to: today
+        //     )!
+        //     let entry = HabitEntryEntity(context: viewContext)
+        //     entry.id = UUID()
+        //     entry.date = entryDate
+        //     entry.createdAt = entryDate
+        //     entry.habit = newItem
+        // }
 
         save()
     }
