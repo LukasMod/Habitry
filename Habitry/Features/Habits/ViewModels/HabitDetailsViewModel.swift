@@ -14,6 +14,10 @@ final class HabitDetailsViewModel: ObservableObject {
         habit.name ?? "Name"
     }
 
+    func makeEditViewModel() -> HabitEditViewModel {
+        HabitEditViewModel(habit: habit)
+    }
+
     var currentStreakText: String {
         String(habit.currentStreak)
     }
