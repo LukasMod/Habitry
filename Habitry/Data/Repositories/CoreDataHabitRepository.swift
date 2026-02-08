@@ -76,6 +76,30 @@ final class CoreDataHabitRepository: NSObject, HabitRepository {
         save()
     }
 
+    func toggleEntry(habit: HabitEntity, date: Date) {
+        let calendar = Calendar.current
+        let dayStart = calendar.startOfDay(for: date)
+        let nextDay = calendar.date(byAdding: .day, value: 1, to: dayStart)
+        let entries = habit.entries as? Set<HabitEntryEntity> ?? []
+
+        if let existing = entries.first(where: { entry in
+            guard let entryDate = entry.date, let nextDay else { return false }
+            return entryDate >= dayStart && entryDate < nextDay
+        }) {
+            viewContext.delete(existing)
+            save()
+            return
+        }
+
+        let entry = HabitEntryEntity(context: viewContext)
+        entry.id = UUID()
+        entry.date = dayStart
+        entry.createdAt = Date()
+        entry.habit = habit
+
+        save()
+    }
+
     func deleteHabits(habits: [HabitEntity]) {
         for habit in habits {
             viewContext.delete(habit)

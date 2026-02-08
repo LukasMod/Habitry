@@ -20,7 +20,9 @@ struct HabitListView: View {
                             viewModel: HabitDetailsViewModel(habit: item)
                         )
                     } label: {
-                        Text(item.name ?? "Name")
+                        HabitListItemView(habit: item) {
+                            viewModel.toggleCheckIn(habit: item)
+                        }
                     }
                 }
                 .onDelete(perform: deleteItems)

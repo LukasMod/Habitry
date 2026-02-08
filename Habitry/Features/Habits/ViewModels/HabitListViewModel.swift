@@ -23,6 +23,10 @@ final class HabitListViewModel {
     HabitCreateViewModel(repository: repository)
   }
 
+  func toggleCheckIn(habit: HabitEntity, date: Date = Date()) {
+    repository.toggleEntry(habit: habit, date: date)
+  }
+
   func deleteItems(offsets: IndexSet) {
     let habits = offsets.map { items[$0] }
     repository.deleteHabits(habits: habits)

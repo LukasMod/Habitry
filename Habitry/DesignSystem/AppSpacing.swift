@@ -8,5 +8,7 @@
 import SwiftUI
 
 enum AppSpacing {
+    static let xs: CGFloat = 4
+    static let s: CGFloat = 8
     static let m: CGFloat = 16
 }
