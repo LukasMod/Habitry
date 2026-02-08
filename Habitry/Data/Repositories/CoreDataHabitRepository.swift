@@ -72,8 +72,10 @@ final class CoreDataHabitRepository: NSObject, HabitRepository {
         save()
     }
 
-    func delete(habit: HabitEntity) {
-        viewContext.delete(habit)
+    func deleteHabits(habits: [HabitEntity]) {
+        for habit in habits {
+            viewContext.delete(habit)
+        }
         save()
     }
 
