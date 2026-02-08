@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HabitListView: View {
-    @ObservedObject var viewModel: HabitListViewModel
+    let viewModel: HabitListViewModel
 
     var body: some View {
         NavigationStack {
