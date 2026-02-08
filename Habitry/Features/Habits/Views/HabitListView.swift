@@ -13,19 +13,28 @@ struct HabitListView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(viewModel.items) { item in
-                    NavigationLink {
-                        HabitDetailView(
-                            viewModel: HabitDetailsViewModel(habit: item)
-                        )
-                    } label: {
-                        HabitListItemView(habit: item) {
-                            viewModel.toggleCheckIn(habit: item)
+            ScrollView {
+                LazyVStack(spacing: AppSpacing.m) {
+                    ForEach(viewModel.items) { item in
+                        NavigationLink {
+                            HabitDetailView(
+                                viewModel: HabitDetailsViewModel(habit: item)
+                            )
+                        } label: {
+                            HabitListItemView(habit: item) {
+                                viewModel.toggleCheckIn(habit: item)
+                            }
+                            .padding(AppSpacing.m)
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color(.secondarySystemBackground))
+                            )
                         }
+                        .buttonStyle(.plain)
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .padding(AppSpacing.m)
+        
             }
             .toolbar {
                 ToolbarItem {
@@ -42,11 +51,5 @@ struct HabitListView: View {
 
     private func openCreate() {
         isCreatePresented = true
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            viewModel.deleteItems(offsets: offsets)
-        }
     }
 }
