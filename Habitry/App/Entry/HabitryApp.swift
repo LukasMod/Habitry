@@ -14,8 +14,13 @@ struct HabitryApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            ContentView(
+                viewContext: persistenceController.container.viewContext
+            )
+            .environment(
+                \.managedObjectContext,
+                persistenceController.container.viewContext
+            )
         }
     }
 }
