@@ -4,9 +4,11 @@ import Foundation
 @MainActor
 final class HabitDetailsViewModel {
     private let habit: HabitEntity
+    private let repository: HabitRepository
 
-    init(habit: HabitEntity) {
+    init(habit: HabitEntity, repository: HabitRepository) {
         self.habit = habit
+        self.repository = repository
     }
 
     var nameText: String {
@@ -14,7 +16,7 @@ final class HabitDetailsViewModel {
     }
 
     func makeEditViewModel() -> HabitEditViewModel {
-        HabitEditViewModel(habit: habit)
+        HabitEditViewModel(habit: habit, repository: repository)
     }
 
     var currentStreakText: String {

@@ -10,6 +10,7 @@ import SwiftUI
 struct HabitDetailView: View {
     let viewModel: HabitDetailsViewModel
     @State private var isEditPresented = false
+    @Environment(\.dismiss) private var dismiss
 
     init(viewModel: HabitDetailsViewModel) {
         self.viewModel = viewModel
@@ -31,7 +32,13 @@ struct HabitDetailView: View {
             }
         }
         .sheet(isPresented: $isEditPresented) {
-            HabitEditView(viewModel: viewModel.makeEditViewModel())
+            HabitEditView(
+                viewModel: viewModel.makeEditViewModel(),
+                onDelete: {
+                    isEditPresented = false
+                    dismiss()
+                }
+            )
         }
     }
 }

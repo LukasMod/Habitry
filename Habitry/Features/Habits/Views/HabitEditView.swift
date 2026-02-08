@@ -9,11 +9,16 @@ import SwiftUI
 
 struct HabitEditView: View {
   @Environment(\.dismiss) private var dismiss
+    let onDelete: () -> Void
     let viewModel: HabitEditViewModel
 
-  init(viewModel: HabitEditViewModel) {
+    init(
+        viewModel: HabitEditViewModel,
+        onDelete: @escaping () -> Void
+    ) {
         self.viewModel = viewModel
-  }
+        self.onDelete = onDelete
+    }
 
   var body: some View {
     NavigationStack {
@@ -30,6 +35,13 @@ struct HabitEditView: View {
             dismiss()
           }
         }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Delete") {
+                        viewModel.deleteHabit()
+                        onDelete()
+                    }
+                    .tint(.red)
+                }
       }
     }
   }

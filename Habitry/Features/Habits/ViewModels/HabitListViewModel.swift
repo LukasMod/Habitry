@@ -23,6 +23,10 @@ final class HabitListViewModel {
     HabitCreateViewModel(repository: repository)
   }
 
+  func makeDetailsViewModel(habit: HabitEntity) -> HabitDetailsViewModel {
+    HabitDetailsViewModel(habit: habit, repository: repository)
+  }
+
   func toggleCheckIn(habit: HabitEntity, date: Date = Date()) {
     repository.toggleEntry(habit: habit, date: date)
   }
