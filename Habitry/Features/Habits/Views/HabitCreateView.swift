@@ -9,10 +9,10 @@ import SwiftUI
 
 struct HabitCreateView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel: HabitCreateViewModel
+    @Bindable var viewModel: HabitCreateViewModel
 
     init(viewModel: HabitCreateViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
 
     var body: some View {

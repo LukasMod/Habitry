@@ -1,9 +1,10 @@
-import Combine
-import SwiftUI
+import Foundation
+import Observation
 
 @MainActor
-final class HabitListViewModel: ObservableObject {
-  @Published private(set) var items: [HabitEntity] = []
+@Observable
+final class HabitListViewModel {
+  private(set) var items: [HabitEntity] = []
 
   private let repository: HabitRepository
 

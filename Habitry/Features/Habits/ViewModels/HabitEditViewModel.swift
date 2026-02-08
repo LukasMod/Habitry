@@ -5,11 +5,10 @@
 //  Created by Łukasz Modzelewski on 08/02/2026.
 //
 
-import SwiftUI
-import Combine
+import CoreData
 
 @MainActor
-final class HabitEditViewModel: ObservableObject {
+final class HabitEditViewModel {
     private let habit: HabitEntity
 
     init(habit: HabitEntity) {

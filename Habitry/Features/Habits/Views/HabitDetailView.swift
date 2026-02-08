@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct HabitDetailView: View {
-    @StateObject private var viewModel: HabitDetailsViewModel
+    let viewModel: HabitDetailsViewModel
     @State private var isEditPresented = false
 
     init(viewModel: HabitDetailsViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
     }
 
     var body: some View {

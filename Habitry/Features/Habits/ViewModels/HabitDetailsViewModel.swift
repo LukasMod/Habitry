@@ -1,9 +1,8 @@
 import CoreData
-import SwiftUI
-import Combine
+import Foundation
 
 @MainActor
-final class HabitDetailsViewModel: ObservableObject {
+final class HabitDetailsViewModel {
     private let habit: HabitEntity
 
     init(habit: HabitEntity) {

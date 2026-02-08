@@ -9,10 +9,10 @@ import SwiftUI
 
 struct HabitEditView: View {
   @Environment(\.dismiss) private var dismiss
-  @StateObject private var viewModel: HabitEditViewModel
+    let viewModel: HabitEditViewModel
 
   init(viewModel: HabitEditViewModel) {
-    _viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
   }
 
   var body: some View {

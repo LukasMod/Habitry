@@ -5,12 +5,13 @@
 //  Created by Łukasz Modzelewski on 08/02/2026.
 //
 
-import Combine
-import SwiftUI
+import Foundation
+import Observation
 
 @MainActor
-final class HabitCreateViewModel: ObservableObject {
-  @Published var name: String = ""
+@Observable
+final class HabitCreateViewModel {
+  var name: String = ""
 
   private let repository: HabitRepository
 

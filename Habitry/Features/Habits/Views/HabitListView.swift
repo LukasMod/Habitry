@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HabitListView: View {
-    @ObservedObject var viewModel: HabitListViewModel
+    @Bindable var viewModel: HabitListViewModel
     @State private var isCreatePresented = false
 
     var body: some View {

@@ -9,12 +9,12 @@ import CoreData
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var viewModel: HabitListViewModel
+    @State private var viewModel: HabitListViewModel
 
     init(viewContext: NSManagedObjectContext) {
         let repository = CoreDataHabitRepository(viewContext: viewContext)
-        _viewModel = StateObject(
-            wrappedValue: HabitListViewModel(repository: repository)
+        _viewModel = State(
+            initialValue: HabitListViewModel(repository: repository)
         )
     }
 
