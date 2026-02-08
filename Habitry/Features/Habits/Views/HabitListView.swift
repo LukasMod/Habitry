@@ -11,7 +11,7 @@ struct HabitListView: View {
     @ObservedObject var viewModel: HabitListViewModel
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 ForEach(viewModel.items) { item in
                     NavigationLink {
@@ -25,16 +25,12 @@ struct HabitListView: View {
                 .onDelete(perform: deleteItems)
             }
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
                 ToolbarItem {
                     Button(action: addItem) {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
             }
-            Text("Select an item")
         }
     }
 

@@ -16,12 +16,12 @@ struct HabitDetailView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: Layout.spacing) {
+        VStack(alignment: .leading, spacing: AppSpacing.m) {
             Text("Habit details")
                 .font(.headline)
             Spacer()
         }
-        .padding(Layout.spacing)
+        .padding(AppSpacing.m)
         .navigationTitle(viewModel.nameText)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -34,8 +34,4 @@ struct HabitDetailView: View {
             HabitEditView(viewModel: viewModel.makeEditViewModel())
         }
     }
-}
-
-private enum Layout {
-    static let spacing: CGFloat = 16
 }
