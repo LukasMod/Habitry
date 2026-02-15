@@ -9,6 +9,7 @@ import CoreData
 import SwiftUI
 
 struct HabitDetailView: View {
+  @ObservedObject var habit: HabitEntity
   let viewModel: HabitDetailsViewModel
   @State private var isEditPresented = false
   @State private var displayedMonth: Date = Date()
@@ -16,7 +17,8 @@ struct HabitDetailView: View {
 
   private var calendar: Calendar { HabitDetailsViewModel.calendar }
 
-  init(viewModel: HabitDetailsViewModel) {
+  init(habit: HabitEntity, viewModel: HabitDetailsViewModel) {
+    self.habit = habit
     self.viewModel = viewModel
   }
 
@@ -117,7 +119,8 @@ struct HabitDetailView: View {
             date: cellDate,
             displayedMonthStart: calendar.startOfMonth(displayedMonth),
             calendar: calendar,
-            hasEntry: viewModel.entryDates.contains(cellDate)
+            hasEntry: viewModel.entryDates.contains(cellDate),
+            onTap: { viewModel.toggleEntry(for: cellDate) }
           )
         }
       }
@@ -210,6 +213,7 @@ private struct CalendarDayCell: View {
   let displayedMonthStart: Date
   let calendar: Calendar
   let hasEntry: Bool
+  var onTap: (() -> Void)?
 
   private var dayNumber: Int { calendar.component(.day, from: date) }
   private var inMonth: Bool {
@@ -218,37 +222,40 @@ private struct CalendarDayCell: View {
 
   var body: some View {
     let isToday = calendar.isDateInToday(date)
-    Text("\(dayNumber)")
-      .font(.caption)
-      .fontWeight(isToday ? .semibold : .regular)
-      .foregroundStyle(hasEntry ? .white : (inMonth ? .primary : .secondary))
-      .frame(minWidth: AppSize.daySquare + 4, minHeight: AppSize.daySquare + 4)
-      .background {
-        if hasEntry {
-          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
-            .fill(Color.green)
+    Button(action: { onTap?() }) {
+      Text("\(dayNumber)")
+        .font(.caption)
+        .fontWeight(isToday ? .semibold : .regular)
+        .foregroundStyle(hasEntry ? .white : (inMonth ? .primary : .secondary))
+        .frame(minWidth: AppSize.daySquare + 4, minHeight: AppSize.daySquare + 4)
+        .background {
+          if hasEntry {
+            RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
+              .fill(Color.green)
+          }
         }
-      }
-      .overlay {
-        if isToday && !hasEntry {
-          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
-            .stroke(Color.accentColor, lineWidth: 2)
-        } else if isToday && hasEntry {
-          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
-            .stroke(Color.white, lineWidth: 2)
+        .overlay {
+          if isToday && !hasEntry {
+            RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
+              .stroke(Color.accentColor, lineWidth: 2)
+          } else if isToday && hasEntry {
+            RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
+              .stroke(Color.white, lineWidth: 2)
+          }
         }
-      }
-      .overlay {
-        if isToday && hasEntry {
-          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius + 2)
-            .stroke(Color.accentColor, lineWidth: 2.5)
+        .overlay {
+          if isToday && hasEntry {
+            RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius + 2)
+              .stroke(Color.accentColor, lineWidth: 2.5)
+          }
         }
-      }
+    }
+    .buttonStyle(.plain)
   }
 }
 
 #if DEBUG
-#Preview("Habit details") {
+#Preview("Habit details – With entries") {
   let context = PersistenceController.preview.container.viewContext
   let repository = CoreDataHabitRepository(viewContext: context)
   let habit = HabitEntity(context: context)
@@ -265,10 +272,9 @@ private struct CalendarDayCell: View {
 
   let viewModel = HabitDetailsViewModel(habit: habit, repository: repository)
   return NavigationStack {
-    HabitDetailView(viewModel: viewModel)
+    HabitDetailView(habit: habit, viewModel: viewModel)
   }
 }
-#endif
 
 #Preview("Habit details – No entries") {
   let context = PersistenceController.preview.container.viewContext
@@ -279,6 +285,28 @@ private struct CalendarDayCell: View {
   habit.createdAt = Date()
   let viewModel = HabitDetailsViewModel(habit: habit, repository: repository)
   return NavigationStack {
-    HabitDetailView(viewModel: viewModel)
+    HabitDetailView(habit: habit, viewModel: viewModel)
   }
 }
+
+#Preview("Habit details – Summary & calendar") {
+  let context = PersistenceController.preview.container.viewContext
+  let repository = CoreDataHabitRepository(viewContext: context)
+  let habit = HabitEntity(context: context)
+  habit.id = UUID()
+  habit.name = "Running"
+  habit.createdAt = Date()
+  habit.currentStreak = 7
+  let cal = Calendar.current
+  for dayOffset in 0..<12 {
+    if let d = cal.date(byAdding: .day, value: -dayOffset, to: Date()) {
+      let e = PreviewContext.makeEntry(habit: habit, date: d)
+      e.value = Int16(2 + dayOffset % 3)
+    }
+  }
+  let viewModel = HabitDetailsViewModel(habit: habit, repository: repository)
+  return NavigationStack {
+    HabitDetailView(habit: habit, viewModel: viewModel)
+  }
+}
+#endif

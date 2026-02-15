@@ -93,8 +93,9 @@ final class CoreDataHabitRepository: NSObject, HabitRepository {
 
         let entry = HabitEntryEntity(context: viewContext)
         entry.id = UUID()
-        entry.date = Date()
-        entry.createdAt = Date()
+        let now = Date()
+        entry.date = calendar.date(bySettingHour: calendar.component(.hour, from: now), minute: calendar.component(.minute, from: now), second: 0, of: dayStart) ?? now
+        entry.createdAt = now
         entry.habit = habit
 
         save()

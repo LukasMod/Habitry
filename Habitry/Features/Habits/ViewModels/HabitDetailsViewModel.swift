@@ -32,6 +32,11 @@ final class HabitDetailsViewModel {
         HabitEditViewModel(habit: habit, repository: repository)
     }
 
+    /// Toggle entry for the given day (add with current time, or remove if exists).
+    func toggleEntry(for date: Date) {
+        repository.toggleEntry(habit: habit, date: date)
+    }
+
     var totalEntriesCount: Int {
         (habit.entries as? Set<HabitEntryEntity>)?.count ?? 0
     }

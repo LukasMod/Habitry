@@ -18,6 +18,7 @@ struct HabitListView: View {
                     ForEach(viewModel.items) { item in
                         NavigationLink {
                             HabitDetailView(
+                                habit: item,
                                 viewModel: viewModel.makeDetailsViewModel(habit: item)
                             )
                         } label: {
