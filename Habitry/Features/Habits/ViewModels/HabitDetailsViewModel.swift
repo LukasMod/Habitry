@@ -11,6 +11,19 @@ final class HabitDetailsViewModel {
         self.repository = repository
     }
 
+    /// Start-of-day dates that have an entry (same calendar as list: Monday first).
+    var entryDates: Set<Date> {
+        let calendar = Self.calendar
+        guard let entries = habit.entries as? Set<HabitEntryEntity> else { return [] }
+        return Set(entries.compactMap { $0.date }.map { calendar.startOfDay(for: $0) })
+    }
+
+    static var calendar: Calendar {
+        var cal = Calendar.current
+        cal.firstWeekday = 2
+        return cal
+    }
+
     var nameText: String {
         habit.name ?? "Name"
     }
@@ -72,7 +85,6 @@ struct HabitEntryRow: Identifiable {
 
 private let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
+    formatter.dateFormat = "HH:mm, dd.MM.yyyy"
     return formatter
 }()

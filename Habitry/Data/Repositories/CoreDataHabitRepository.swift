@@ -93,7 +93,7 @@ final class CoreDataHabitRepository: NSObject, HabitRepository {
 
         let entry = HabitEntryEntity(context: viewContext)
         entry.id = UUID()
-        entry.date = dayStart
+        entry.date = Date()
         entry.createdAt = Date()
         entry.habit = habit
 

@@ -11,7 +11,10 @@ import SwiftUI
 struct HabitDetailView: View {
   let viewModel: HabitDetailsViewModel
   @State private var isEditPresented = false
+  @State private var displayedMonth: Date = Date()
   @Environment(\.dismiss) private var dismiss
+
+  private var calendar: Calendar { HabitDetailsViewModel.calendar }
 
   init(viewModel: HabitDetailsViewModel) {
     self.viewModel = viewModel
@@ -21,6 +24,8 @@ struct HabitDetailView: View {
     ScrollView {
 
       VStack(alignment: .leading, spacing: AppSpacing.m) {
+        habitCalendar
+
         Text("Entries")
           .font(.headline)
 
@@ -28,11 +33,27 @@ struct HabitDetailView: View {
           Text("No entries yet")
             .foregroundStyle(.secondary)
         } else {
-          ForEach(viewModel.entries) { entry in
-            HStack {
-              Text(entry.dateText)
+          VStack(spacing: AppSpacing.s) {
+            ForEach(viewModel.entries) { entry in
+              HStack(alignment: .top, spacing: AppSpacing.s) {
+                Image(systemName: "checkmark.circle.fill")
+                  .foregroundStyle(.green)
+                  .font(.body)
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                  Text(entry.dateText)
+                    .font(.subheadline)
+                  if entry.valueText != "0" {
+                    Text("Value: \(entry.valueText)")
+                      .font(.caption)
+                      .foregroundStyle(.secondary)
+                  }
+                }
+                Spacer(minLength: 0)
+              }
+              .padding(.vertical, AppSpacing.s)
+              .padding(.horizontal, AppSpacing.m)
+              .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
             }
-            .padding(.vertical, AppSpacing.xs)
           }
         }
 
@@ -58,6 +79,146 @@ struct HabitDetailView: View {
       )
     }
   }
+
+  private var habitCalendar: some View {
+    VStack(alignment: .leading, spacing: AppSpacing.s) {
+      HStack {
+        Button {
+          moveMonth(by: -1)
+        } label: {
+          Image(systemName: "chevron.left")
+        }
+        Spacer()
+        Text(monthYearText)
+          .font(.headline)
+        Spacer()
+        Button {
+          moveMonth(by: 1)
+        } label: {
+          Image(systemName: "chevron.right")
+        }
+      }
+      .padding(.horizontal, AppSpacing.xs)
+
+      HStack(spacing: 0) {
+        ForEach(weekdayLabels, id: \.self) { label in
+          Text(label)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .frame(maxWidth: .infinity)
+        }
+      }
+
+      LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 7), spacing: 4) {
+        ForEach(calendarDays, id: \.self) { cellDate in
+          CalendarDayCell(
+            date: cellDate,
+            displayedMonthStart: calendar.startOfMonth(displayedMonth),
+            calendar: calendar,
+            hasEntry: viewModel.entryDates.contains(cellDate)
+          )
+        }
+      }
+    }
+  }
+
+  private var monthYearText: String {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "MMMM yyyy"
+    formatter.calendar = calendar
+    return formatter.string(from: displayedMonth)
+  }
+
+  private var weekdayLabels: [String] {
+    let symbols = calendar.veryShortWeekdaySymbols
+    let first = calendar.firstWeekday - 1
+    return (0..<7).map { symbols[($0 + first) % 7].prefix(1).uppercased() }
+  }
+
+  private var calendarDays: [Date] {
+    let start = calendar.startOfMonth(displayedMonth)
+    let weekday = calendar.component(.weekday, from: start)
+    let leadingBlanks = (weekday - calendar.firstWeekday + 7) % 7
+    let count = calendar.range(of: .day, in: .month, for: start)?.count ?? 31
+    var out: [Date] = []
+    if let prevMonth = calendar.date(byAdding: .month, value: -1, to: start) {
+      let prevCount = calendar.range(of: .day, in: .month, for: prevMonth)?.count ?? 30
+      for d in (prevCount - leadingBlanks + 1)...prevCount {
+        if let date = calendar.date(bySetting: .day, value: d, of: prevMonth) {
+          out.append(calendar.startOfDay(for: date))
+        }
+      }
+    }
+    for d in 1...count {
+      if let date = calendar.date(bySetting: .day, value: d, of: start) {
+        out.append(calendar.startOfDay(for: date))
+      }
+    }
+    let remaining = 42 - out.count
+    if remaining > 0, let nextMonth = calendar.date(byAdding: .month, value: 1, to: start) {
+      for d in 1...remaining {
+        if let date = calendar.date(bySetting: .day, value: d, of: nextMonth) {
+          out.append(calendar.startOfDay(for: date))
+        }
+      }
+    }
+    return out
+  }
+
+  private func moveMonth(by delta: Int) {
+    if let next = calendar.date(byAdding: .month, value: delta, to: displayedMonth) {
+      displayedMonth = calendar.startOfMonth(next)
+    }
+  }
+}
+
+private extension Calendar {
+  func startOfMonth(_ date: Date) -> Date {
+    let comps = dateComponents([.year, .month], from: date)
+    return self.date(from: comps) ?? date
+  }
+}
+
+private struct CalendarDayCell: View {
+  let date: Date
+  let displayedMonthStart: Date
+  let calendar: Calendar
+  let hasEntry: Bool
+
+  private var dayNumber: Int { calendar.component(.day, from: date) }
+  private var inMonth: Bool {
+    calendar.isDate(date, equalTo: displayedMonthStart, toGranularity: .month)
+  }
+
+  var body: some View {
+    let isToday = calendar.isDateInToday(date)
+    Text("\(dayNumber)")
+      .font(.caption)
+      .fontWeight(isToday ? .semibold : .regular)
+      .foregroundStyle(hasEntry ? .white : (inMonth ? .primary : .secondary))
+      .frame(minWidth: AppSize.daySquare + 4, minHeight: AppSize.daySquare + 4)
+      .background {
+        if hasEntry {
+          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
+            .fill(Color.green)
+        }
+      }
+      .overlay {
+        if isToday && !hasEntry {
+          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
+            .stroke(Color.accentColor, lineWidth: 2)
+        } else if isToday && hasEntry {
+          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius)
+            .stroke(Color.white, lineWidth: 2)
+        }
+      }
+      .overlay {
+        if isToday && hasEntry {
+          RoundedRectangle(cornerRadius: AppSize.daySquareCornerRadius + 2)
+            .stroke(Color.accentColor, lineWidth: 2.5)
+        }
+      }
+  }
 }
 
 #if DEBUG
@@ -72,7 +233,7 @@ struct HabitDetailView: View {
   let calendar = Calendar.current
   for dayOffset in 0..<5 {
     if let entryDate = calendar.date(byAdding: .day, value: -dayOffset, to: Date()) {
-      PreviewContext.makeEntry(habit: habit, date: entryDate)
+      _ = PreviewContext.makeEntry(habit: habit, date: entryDate)
     }
   }
 
