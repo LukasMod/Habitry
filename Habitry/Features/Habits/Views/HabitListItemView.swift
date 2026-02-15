@@ -5,6 +5,7 @@
 //  Created by Łukasz Modzelewski on 08/02/2026.
 //
 
+import CoreData
 import SwiftUI
 
 struct HabitListItemView: View {
@@ -140,3 +141,16 @@ private struct WeekDayView: View {
     }
     .padding(AppSpacing.m)
 }
+
+#if DEBUG
+#Preview("Habit List Item") {
+  let context = PreviewContext.viewContext
+  let habit = HabitEntity(context: context)
+  habit.id = UUID()
+  habit.name = "Morning Run"
+  habit.createdAt = Date()
+  _ = PreviewContext.makeEntry(habit: habit, date: Calendar.current.startOfDay(for: Date()))
+  return HabitListItemView(habit: habit, onToggleCheckIn: {})
+    .padding(AppSpacing.m)
+}
+#endif

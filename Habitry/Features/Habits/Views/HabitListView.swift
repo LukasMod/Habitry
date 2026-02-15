@@ -53,3 +53,9 @@ struct HabitListView: View {
         isCreatePresented = true
     }
 }
+
+#if DEBUG
+#Preview("Habit List – With Items") {
+    HabitListView(viewModel: HabitListViewModel(repository: PreviewContext.repository))
+}
+#endif

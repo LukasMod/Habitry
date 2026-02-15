@@ -23,7 +23,7 @@ struct ContentView: View {
     }
 }
 
-#Preview {
+#Preview("App Root") {
     ContentView(
         viewContext: PersistenceController.preview.container.viewContext
     )

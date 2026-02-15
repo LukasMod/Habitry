@@ -41,3 +41,9 @@ struct HabitCreateView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Habit Create") {
+    HabitCreateView(viewModel: HabitCreateViewModel(repository: PreviewContext.repository))
+}
+#endif

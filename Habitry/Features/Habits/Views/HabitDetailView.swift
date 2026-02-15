@@ -60,6 +60,7 @@ struct HabitDetailView: View {
   }
 }
 
+#if DEBUG
 #Preview("Habit details") {
   let context = PersistenceController.preview.container.viewContext
   let repository = CoreDataHabitRepository(viewContext: context)
@@ -71,14 +72,24 @@ struct HabitDetailView: View {
   let calendar = Calendar.current
   for dayOffset in 0..<5 {
     if let entryDate = calendar.date(byAdding: .day, value: -dayOffset, to: Date()) {
-      let entry = HabitEntryEntity(context: context)
-      entry.id = UUID()
-      entry.date = entryDate
-      entry.createdAt = entryDate
-      entry.habit = habit
+      PreviewContext.makeEntry(habit: habit, date: entryDate)
     }
   }
 
+  let viewModel = HabitDetailsViewModel(habit: habit, repository: repository)
+  return NavigationStack {
+    HabitDetailView(viewModel: viewModel)
+  }
+}
+#endif
+
+#Preview("Habit details – No entries") {
+  let context = PersistenceController.preview.container.viewContext
+  let repository = CoreDataHabitRepository(viewContext: context)
+  let habit = HabitEntity(context: context)
+  habit.id = UUID()
+  habit.name = "New Habit"
+  habit.createdAt = Date()
   let viewModel = HabitDetailsViewModel(habit: habit, repository: repository)
   return NavigationStack {
     HabitDetailView(viewModel: viewModel)
