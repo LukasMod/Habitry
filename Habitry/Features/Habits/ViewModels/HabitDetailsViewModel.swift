@@ -51,8 +51,34 @@ final class HabitDetailsViewModel {
             .reduce(0) { $0 + Int($1.value) }
     }
 
+    /// Number of distinct days in the given month that have at least one entry.
+    func checkedDaysInMonth(_ monthStart: Date) -> Int {
+        let calendar = Self.calendar
+        let nextMonth = calendar.date(byAdding: .month, value: 1, to: monthStart) ?? monthStart
+        return entryDates.filter { $0 >= monthStart && $0 < nextMonth }.count
+    }
+
+    /// Consecutive checked days ending at the most recent checked day (from today going back).
+    /// Bounded by actual data: stops when we pass the earliest entry date.
+    var currentStreak: Int {
+        let calendar = Self.calendar
+        guard let earliest = entryDates.min() else { return 0 }
+        var day = calendar.startOfDay(for: Date())
+        while !entryDates.contains(day) {
+            day = calendar.date(byAdding: .day, value: -1, to: day)!
+            if day < earliest { return 0 }
+        }
+        var count = 1
+        var prev = calendar.date(byAdding: .day, value: -1, to: day)!
+        while entryDates.contains(prev) {
+            count += 1
+            prev = calendar.date(byAdding: .day, value: -1, to: prev)!
+        }
+        return count
+    }
+
     var currentStreakText: String {
-        String(habit.currentStreak)
+        String(currentStreak)
     }
 
     var longestStreakText: String {

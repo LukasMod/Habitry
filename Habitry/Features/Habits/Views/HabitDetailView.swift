@@ -129,10 +129,10 @@ struct HabitDetailView: View {
 
   private var habitSummary: some View {
     let monthStart = calendar.startOfMonth(displayedMonth)
-    let monthSum = viewModel.valueSumInMonth(monthStart)
+    let checkedThisMonth = viewModel.checkedDaysInMonth(monthStart)
     return HStack(spacing: AppSpacing.m) {
       summaryItem(value: "\(viewModel.totalEntriesCount)", label: "Total")
-      summaryItem(value: "\(monthSum)", label: "This month")
+      summaryItem(value: "\(checkedThisMonth)", label: "This month")
       summaryItem(value: viewModel.currentStreakText, label: "Streak")
     }
     .padding(.vertical, AppSpacing.s)
@@ -219,10 +219,13 @@ private struct CalendarDayCell: View {
   private var inMonth: Bool {
     calendar.isDate(date, equalTo: displayedMonthStart, toGranularity: .month)
   }
+  private var isFuture: Bool {
+    date > calendar.startOfDay(for: Date())
+  }
 
   var body: some View {
     let isToday = calendar.isDateInToday(date)
-    Button(action: { onTap?() }) {
+    Button(action: { if !isFuture { onTap?() } }) {
       Text("\(dayNumber)")
         .font(.caption)
         .fontWeight(isToday ? .semibold : .regular)
@@ -251,6 +254,8 @@ private struct CalendarDayCell: View {
         }
     }
     .buttonStyle(.plain)
+    .disabled(isFuture)
+    .opacity(isFuture ? 0.5 : 1)
   }
 }
 
