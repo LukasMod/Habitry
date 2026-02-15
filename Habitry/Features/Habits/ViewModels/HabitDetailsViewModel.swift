@@ -32,6 +32,20 @@ final class HabitDetailsViewModel {
         HabitEditViewModel(habit: habit, repository: repository)
     }
 
+    var totalEntriesCount: Int {
+        (habit.entries as? Set<HabitEntryEntity>)?.count ?? 0
+    }
+
+    /// Sum of entry values in the given month (pass start-of-month date).
+    func valueSumInMonth(_ monthStart: Date) -> Int {
+        let calendar = Self.calendar
+        guard let entries = habit.entries as? Set<HabitEntryEntity> else { return 0 }
+        let nextMonth = calendar.date(byAdding: .month, value: 1, to: monthStart) ?? monthStart
+        return entries
+            .filter { ($0.date ?? .distantPast) >= monthStart && ($0.date ?? .distantPast) < nextMonth }
+            .reduce(0) { $0 + Int($1.value) }
+    }
+
     var currentStreakText: String {
         String(habit.currentStreak)
     }

@@ -24,6 +24,8 @@ struct HabitDetailView: View {
     ScrollView {
 
       VStack(alignment: .leading, spacing: AppSpacing.m) {
+        habitSummary
+
         habitCalendar
 
         Text("Entries")
@@ -120,6 +122,30 @@ struct HabitDetailView: View {
         }
       }
     }
+  }
+
+  private var habitSummary: some View {
+    let monthStart = calendar.startOfMonth(displayedMonth)
+    let monthSum = viewModel.valueSumInMonth(monthStart)
+    return HStack(spacing: AppSpacing.m) {
+      summaryItem(value: "\(viewModel.totalEntriesCount)", label: "Total")
+      summaryItem(value: "\(monthSum)", label: "This month")
+      summaryItem(value: viewModel.currentStreakText, label: "Streak")
+    }
+    .padding(.vertical, AppSpacing.s)
+    .padding(.horizontal, AppSpacing.m)
+    .background(Color.gray.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+  }
+
+  private func summaryItem(value: String, label: String) -> some View {
+    VStack(spacing: AppSpacing.xs) {
+      Text(value)
+        .font(.subheadline.weight(.semibold))
+      Text(label)
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+    }
+    .frame(maxWidth: .infinity)
   }
 
   private var monthYearText: String {
